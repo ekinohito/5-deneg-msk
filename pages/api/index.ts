@@ -8,99 +8,50 @@ import {
   nullable,
   objectType,
   stringArg,
+  intArg,
 } from 'nexus'
 import path from 'path'
 import cors from 'micro-cors'
 import prisma from '../../lib/prisma'
+import bcrypt from 'bcrypt'
 
 export const GQLDate = asNexusMethod(DateTimeResolver, 'date')
+
+const SALT_ROUNDS = 12
 
 const User = objectType({
   name: 'User',
   definition(t) {
     t.int('id')
-    t.string('name')
     t.string('email')
-    t.list.field('posts', {
-      type: 'Post',
-      resolve: (parent) =>
-        prisma.user
-          .findUnique({
-            where: { id: Number(parent.id) },
-          })
-          .posts(),
-    })
-  },
-})
-
-const Post = objectType({
-  name: 'Post',
-  definition(t) {
-    t.int('id')
-    t.string('title')
-    t.nullable.string('content')
-    t.boolean('published')
-    t.nullable.field('author', {
-      type: 'User',
-      resolve: (parent) =>
-        prisma.post
-          .findUnique({
-            where: { id: Number(parent.id) },
-          })
-          .author(),
-    })
   },
 })
 
 const Query = objectType({
   name: 'Query',
   definition(t) {
-    t.field('post', {
-      type: 'Post',
+    t.field('user', {
+      type: 'User',
       args: {
-        postId: nonNull(stringArg()),
+        userId: nonNull(intArg()),
       },
-      resolve: (_, args) => {
-        return prisma.post.findUnique({
-          where: { id: Number(args.postId) },
+      resolve: (_, { userId }) => {
+        return prisma.user.findUnique({
+          where: { id: userId }
         })
-      },
+      }
     })
-
-    t.list.field('feed', {
-      type: 'Post',
-      resolve: (_parent, _args) => {
-        return prisma.post.findMany({
-          where: { published: true },
-        })
-      },
-    })
-
-    t.list.field('drafts', {
-      type: 'Post',
-      resolve: (_parent, _args, ctx) => {
-        return prisma.post.findMany({
-          where: { published: false },
-        })
-      },
-    })
-
-    t.list.field('filterPosts', {
-      type: 'Post',
-      args: {
-        searchString: nullable(stringArg()),
-      },
-      resolve: (_, { searchString }, ctx) => {
-        return prisma.post.findMany({
-          where: {
-            OR: [
-              { title: { contains: searchString } },
-              { content: { contains: searchString } },
-            ],
-          },
-        })
-      },
-    })
+    // t.field('post', {
+    //   type: 'Post',
+    //   args: {
+    //     postId: nonNull(stringArg()),
+    //   },
+    //   resolve: (_, args) => {
+    //     return prisma.post.findUnique({
+    //       where: { id: Number(args.postId) },
+    //     })
+    //   },
+    // })
   },
 })
 
@@ -110,61 +61,18 @@ const Mutation = objectType({
     t.field('signupUser', {
       type: 'User',
       args: {
-        name: stringArg(),
+        name: nonNull(stringArg()),
         email: nonNull(stringArg()),
+        password: nonNull(stringArg())
       },
-      resolve: (_, { name, email }, ctx) => {
+      resolve: async (_, { name, email, password }, ctx) => {
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
         return prisma.user.create({
           data: {
             name,
             email,
+            hashedPassword,
           },
-        })
-      },
-    })
-
-    t.nullable.field('deletePost', {
-      type: 'Post',
-      args: {
-        postId: stringArg(),
-      },
-      resolve: (_, { postId }, ctx) => {
-        return prisma.post.delete({
-          where: { id: Number(postId) },
-        })
-      },
-    })
-
-    t.field('createDraft', {
-      type: 'Post',
-      args: {
-        title: nonNull(stringArg()),
-        content: stringArg(),
-        authorEmail: stringArg(),
-      },
-      resolve: (_, { title, content, authorEmail }, ctx) => {
-        return prisma.post.create({
-          data: {
-            title,
-            content,
-            published: false,
-            author: {
-              connect: { email: authorEmail },
-            },
-          },
-        })
-      },
-    })
-
-    t.nullable.field('publish', {
-      type: 'Post',
-      args: {
-        postId: stringArg(),
-      },
-      resolve: (_, { postId }, ctx) => {
-        return prisma.post.update({
-          where: { id: Number(postId) },
-          data: { published: true },
         })
       },
     })
@@ -172,7 +80,7 @@ const Mutation = objectType({
 })
 
 export const schema = makeSchema({
-  types: [Query, Mutation, Post, User, GQLDate],
+  types: [Query, Mutation, User, GQLDate],
   outputs: {
     typegen: path.join(process.cwd(), 'generated/nexus-typegen.ts'),
     schema: path.join(process.cwd(), 'generated/schema.graphql'),

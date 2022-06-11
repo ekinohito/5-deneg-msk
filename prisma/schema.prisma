@@ -8,17 +8,49 @@ datasource db {
 }
 
 model User {
-  email String  @unique
-  id    Int     @default(autoincrement()) @id
-  name  String?
-  posts Post[]
+  // E-mail пользователя для регистрации
+  email String @unique
+
+  // Идентификатор пользователя
+  id Int @id @default(autoincrement())
+
+  // Хешированный пароль
+  hashedPassword String
+
+  // Имя пользователя
+  name String
+
+  // Ассоциированная запись волонтера (может отсутствовать)
+  volunteer Volunteer?
+
+  // Мероприятия организованные пользователем
+  organizedEvents Event[]
 }
 
-model Post {
-  authorId  Int?
-  content   String?
-  id        Int     @default(autoincrement()) @id
-  published Boolean @default(false)
-  title     String
-  author    User?   @relation(fields: [authorId], references: [id])
+model Volunteer {
+  // Идентификатор волонтера
+  id Int @id @default(autoincrement())
+
+  // Идентификатор пользователя, с которым ассоциирована запись волонтера
+  userId Int @unique
+
+  // Пользователь, с которым ассоциирована запись волонтера
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Event {
+  // Идентификатор события
+  id Int @id @default(autoincrement())
+
+  // Идентификатор организатора события
+  organizerId Int
+
+  // Организатор события
+  organizer User @relation(fields: [organizerId], references: [id])
+
+  // Дата проведения события
+  date DateTime?
+
+  // URL картинки
+  picture String?
 }
