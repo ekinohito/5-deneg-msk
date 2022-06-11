@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "title": "VolunteerInfo",
+    "description": "Информация о волонтере",
+    "type": "object",
+    "properties": {
+        "categoriesRating": {
+            "type": "array",
+            "description": "Массив рейтингов по категориям",
+            "items": {
+                "type": "number",
+                "description": "Рейтинг для категории"
+            }
+        },
+        "categoriesExperience": {
+            "type": "array",
+            "description": "Массив количества поссещенных мероприятий по категориям",
+            "items": {
+                "type": "integer",
+                "description": "Количество посещенных мероприятий"
+            }
+        },
+        "categoriesInterest": {
+            "type": "array",
+            "description": "Массив hot-ones, представляющий интересы пользователя",
+            "items": {
+                "type": "integer",
+                "description": "0, если пользователь не интересовался; 1, если пользователь интересовался"
+            }
+        },
+        "tokensExperience": {
+            "type": "array",
+            "description": "Массив hot-ones, представляющий токены мероприятий, в которых участвовал пользователь",
+            "items": {
+                "type": "integer",
+                "description": "0, если пользователь не посещал мероприятия с токеном; 1, если пользователь посещал"
+            }
+        }
+    },
+    "required": ["categoriesRating", "categoriesExperience", "categoriesInterest", "tokensExperience"]
+}

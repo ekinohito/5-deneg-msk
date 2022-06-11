@@ -51,8 +51,8 @@ const Blog = () => {
   return (
     <Layout>
       <div className="page">
-        <h1>My Blog</h1>
-        <main>
+        <h1 className="bg-slate-600 text-2xl">My Blog</h1>
+        <main> 
           {data.feed.map(post => (
             <div key={post.id} className="post">
               <Post post={post} />
@@ -60,20 +60,6 @@ const Blog = () => {
           ))}
         </main>
       </div>
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
-
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
-
-        .post + .post {
-          margin-top: 2rem;
-        }
-      `}</style>
     </Layout>
   )
 }
