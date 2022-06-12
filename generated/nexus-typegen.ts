@@ -102,11 +102,12 @@ export interface NexusGenArgTypes {
   }
   Query: {
     login: { // args
+      email: string; // String!
       password: string; // String!
-      userId: number; // Int!
     }
     user: { // args
-      userId: number; // Int!
+      email?: string | null; // String
+      userId?: number | null; // Int
     }
   }
 }

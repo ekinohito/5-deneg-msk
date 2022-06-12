@@ -34,26 +34,31 @@ const Query = objectType({
         t.field("user", {
             type: "User",
             args: {
-                userId: nonNull(intArg()),
+                userId: intArg(),
+                email: stringArg(),
             },
-            resolve: (_, { userId }) => {
+            resolve: (_, { userId, email }) => {
                 return prisma.user.findUnique({
-                    where: { id: userId },
+                    where: { id: userId ?? undefined, email: email ?? undefined },
                 })
             },
         })
         t.field("login", {
             type: "String",
             args: {
-                userId: nonNull(intArg()),
+                email: nonNull(stringArg()),
                 password: nonNull(stringArg())
             },
-            resolve: async (_, { userId, password }) => {
-                const user = await prisma.user.findUnique({
-                    where: { id: userId },
-                })
-                if (!await bcrypt.compare(password, user.hashedPassword)) return null
-                return jwt.sign(user, 'secret')
+            resolve: async (_, { email, password }) => {
+                try {
+                    const user = await prisma.user.findUnique({
+                        where: { email },
+                    })
+                    if (!await bcrypt.compare(password, user.hashedPassword)) return null
+                    return jwt.sign(user, 'secret')
+                } catch {
+                    return null
+                }
             }
         })
         // t.field('post', {
