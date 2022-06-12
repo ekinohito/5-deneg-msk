@@ -48,6 +48,7 @@ export interface NexusGenObjects {
   User: { // root type
     email?: string | null; // String
     id?: number | null; // Int
+    name?: string | null; // String
   }
 }
 
@@ -66,11 +67,13 @@ export interface NexusGenFieldTypes {
     signupUser: NexusGenRootTypes['User'] | null; // User
   }
   Query: { // field return type
+    login: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
   }
   User: { // field return type
     email: string | null; // String
     id: number | null; // Int
+    name: string | null; // String
   }
 }
 
@@ -79,11 +82,13 @@ export interface NexusGenFieldTypeNames {
     signupUser: 'User'
   }
   Query: { // field return type name
+    login: 'String'
     user: 'User'
   }
   User: { // field return type name
     email: 'String'
     id: 'Int'
+    name: 'String'
   }
 }
 
@@ -96,6 +101,10 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
+    login: { // args
+      password: string; // String!
+      userId: number; // Int!
+    }
     user: { // args
       userId: number; // Int!
     }

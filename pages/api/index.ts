@@ -1,123 +1,138 @@
-import { ApolloServer } from 'apollo-server-micro'
-import { DateTimeResolver } from 'graphql-scalars'
-import { NextApiHandler } from 'next'
+import { ApolloServer } from "apollo-server-micro"
+import { DateTimeResolver } from "graphql-scalars"
+import { NextApiHandler } from "next"
 import {
-  asNexusMethod,
-  makeSchema,
-  nonNull,
-  nullable,
-  objectType,
-  stringArg,
-  intArg,
-} from 'nexus'
-import path from 'path'
-import cors from 'micro-cors'
-import prisma from '../../lib/prisma'
-import bcrypt from 'bcrypt'
+    asNexusMethod,
+    makeSchema,
+    nonNull,
+    objectType,
+    stringArg,
+    intArg,
+} from "nexus"
+import path, { resolve } from "path"
+import cors from "micro-cors"
+import prisma from "../../lib/prisma"
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
-export const GQLDate = asNexusMethod(DateTimeResolver, 'date')
+export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
 const SALT_ROUNDS = 12
 
 const User = objectType({
-  name: 'User',
-  definition(t) {
-    t.int('id')
-    t.string('email')
-  },
+    name: "User",
+    definition(t) {
+        t.int("id")
+        t.string("email")
+        t.string("name")
+    },
 })
 
 const Query = objectType({
-  name: 'Query',
-  definition(t) {
-    t.field('user', {
-      type: 'User',
-      args: {
-        userId: nonNull(intArg()),
-      },
-      resolve: (_, { userId }) => {
-        return prisma.user.findUnique({
-          where: { id: userId }
+    name: "Query",
+    definition(t) {
+        t.field("user", {
+            type: "User",
+            args: {
+                userId: nonNull(intArg()),
+            },
+            resolve: (_, { userId }) => {
+                return prisma.user.findUnique({
+                    where: { id: userId },
+                })
+            },
         })
-      }
-    })
-    // t.field('post', {
-    //   type: 'Post',
-    //   args: {
-    //     postId: nonNull(stringArg()),
-    //   },
-    //   resolve: (_, args) => {
-    //     return prisma.post.findUnique({
-    //       where: { id: Number(args.postId) },
-    //     })
-    //   },
-    // })
-  },
+        t.field("login", {
+            type: "String",
+            args: {
+                userId: nonNull(intArg()),
+                password: nonNull(stringArg())
+            },
+            resolve: async (_, { userId, password }) => {
+                const user = await prisma.user.findUnique({
+                    where: { id: userId },
+                })
+                if (!await bcrypt.compare(password, user.hashedPassword)) return null
+                return jwt.sign(user, 'secret')
+            }
+        })
+        // t.field('post', {
+        //   type: 'Post',
+        //   args: {
+        //     postId: nonNull(stringArg()),
+        //   },
+        //   resolve: (_, args) => {
+        //     return prisma.post.findUnique({
+        //       where: { id: Number(args.postId) },
+        //     })
+        //   },
+        // })
+    },
 })
 
 const Mutation = objectType({
-  name: 'Mutation',
-  definition(t) {
-    t.field('signupUser', {
-      type: 'User',
-      args: {
-        name: nonNull(stringArg()),
-        email: nonNull(stringArg()),
-        password: nonNull(stringArg())
-      },
-      resolve: async (_, { name, email, password }, ctx) => {
-        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
-        return prisma.user.create({
-          data: {
-            name,
-            email,
-            hashedPassword,
-          },
+    name: "Mutation",
+    definition(t) {
+        t.field("signupUser", {
+            type: "User",
+            args: {
+                name: nonNull(stringArg()),
+                email: nonNull(stringArg()),
+                password: nonNull(stringArg()),
+            },
+            resolve: async (_, { name, email, password }, ctx) => {
+                const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
+                return prisma.user.create({
+                    data: {
+                        name,
+                        email,
+                        hashedPassword,
+                    },
+                })
+            },
         })
-      },
-    })
-  },
+    },
 })
 
 export const schema = makeSchema({
-  types: [Query, Mutation, User, GQLDate],
-  outputs: {
-    typegen: path.join(process.cwd(), 'generated/nexus-typegen.ts'),
-    schema: path.join(process.cwd(), 'generated/schema.graphql'),
-  },
+    types: [Query, Mutation, User, GQLDate],
+    outputs: {
+        typegen: path.join(process.cwd(), "generated/nexus-typegen.ts"),
+        schema: path.join(process.cwd(), "generated/schema.graphql"),
+    },
 })
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
+    api: {
+        bodyParser: false,
+    },
 }
 
 let apolloServerHandler: NextApiHandler
 
 async function getApolloServerHandler() {
-  const apolloServer = new ApolloServer({ schema })
-  
-  if (!apolloServerHandler) {
-    await apolloServer.start()
+    const apolloServer = new ApolloServer({ schema })
 
-    apolloServerHandler = apolloServer.createHandler({
-      path: '/api',
-    })
-  }
+    if (!apolloServerHandler) {
+        await apolloServer.start()
 
-  return apolloServerHandler
+        apolloServerHandler = apolloServer.createHandler({
+            path: "/api",
+        })
+    }
+
+    return apolloServerHandler
 }
 
 const handler: NextApiHandler = async (req, res) => {
-  const apolloServerHandler = await getApolloServerHandler()
+    const apolloServerHandler = await getApolloServerHandler()
 
-  if (req.method === 'OPTIONS') {
-    res.end()
-    return
-  }
+    if (req.method === "OPTIONS") {
+        res.end()
+        return
+    }
 
-  return apolloServerHandler(req, res)
+    return apolloServerHandler(req, res)
 }
 
 export default cors()(handler)

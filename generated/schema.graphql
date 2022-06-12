@@ -12,10 +12,12 @@ type Mutation {
 }
 
 type Query {
+  login(password: String!, userId: Int!): String
   user(userId: Int!): User
 }
 
 type User {
   email: String
   id: Int
+  name: String
 }
