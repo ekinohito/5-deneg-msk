@@ -8,6 +8,7 @@ import {
     objectType,
     stringArg,
     intArg,
+    list,
 } from "nexus"
 import path, { resolve } from "path"
 import cors from "micro-cors"
@@ -28,6 +29,20 @@ const User = objectType({
     },
 })
 
+const Volunteer = objectType({
+    name: "Volunteer",
+    definition(t) {
+        t.int("id")
+        t.string("picture")
+        t.field("user", {
+            type: "User",
+        })
+        t.float("rating")
+        t.int("eventsCount")
+        t.string("shortDescription")
+    },
+})
+
 const Query = objectType({
     name: "Query",
     definition(t) {
@@ -39,7 +54,10 @@ const Query = objectType({
             },
             resolve: (_, { userId, email }) => {
                 return prisma.user.findUnique({
-                    where: { id: userId ?? undefined, email: email ?? undefined },
+                    where: {
+                        id: userId ?? undefined,
+                        email: email ?? undefined,
+                    },
                 })
             },
         })
@@ -47,31 +65,39 @@ const Query = objectType({
             type: "String",
             args: {
                 email: nonNull(stringArg()),
-                password: nonNull(stringArg())
+                password: nonNull(stringArg()),
             },
             resolve: async (_, { email, password }) => {
                 try {
                     const user = await prisma.user.findUnique({
                         where: { email },
                     })
-                    if (!await bcrypt.compare(password, user.hashedPassword)) return null
-                    return jwt.sign(user, 'secret')
+                    if (!(await bcrypt.compare(password, user.hashedPassword)))
+                        return null
+                    return jwt.sign(user, "secret")
                 } catch {
                     return null
                 }
-            }
+            },
         })
-        // t.field('post', {
-        //   type: 'Post',
-        //   args: {
-        //     postId: nonNull(stringArg()),
-        //   },
-        //   resolve: (_, args) => {
-        //     return prisma.post.findUnique({
-        //       where: { id: Number(args.postId) },
-        //     })
-        //   },
-        // })
+        t.field("volunteer", {
+            type: "Volunteer",
+            args: {
+                id: nonNull(intArg()),
+            },
+            resolve: async (_, { id }) => {
+                return prisma.volunteer.findUnique({
+                    where: { id },
+                    include: { user: true },
+                })
+            },
+        })
+        t.field("volunteers", {
+            type: list("Volunteer"),
+            resolve: async () => {
+                return prisma.volunteer.findMany({ include: { user: true } })
+            },
+        })
     },
 })
 
@@ -96,11 +122,33 @@ const Mutation = objectType({
                 })
             },
         })
+        t.field("alterRating", {
+            type: "Float",
+            args: {
+                id: nonNull(intArg()),
+                rating: nonNull(intArg()),
+            },
+            resolve: async (_, { id, rating }) => {
+                return await prisma.$transaction(async prisma => {
+                    const user = await prisma.volunteer.findUnique({
+                        where: { id },
+                    })
+                    await prisma.volunteer.update({
+                        where: { id },
+                        data: {
+                            rating: user.rating + rating,
+                            eventsCount: user.eventsCount + 1,
+                        },
+                    })
+                    return (user.rating + rating) / (user.eventsCount + 1)
+                })
+            },
+        })
     },
 })
 
 export const schema = makeSchema({
-    types: [Query, Mutation, User, GQLDate],
+    types: [Query, Mutation, User, Volunteer, GQLDate],
     outputs: {
         typegen: path.join(process.cwd(), "generated/nexus-typegen.ts"),
         schema: path.join(process.cwd(), "generated/schema.graphql"),

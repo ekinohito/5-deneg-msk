@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -40,6 +41,26 @@ model Volunteer {
   // URL фотографии
   picture String?
   
+  // Количество посещенных мероприятий
+  eventsCount Int @default(0)
+
+  // Рейтинг за мероприятия
+  rating Float @default(0.0)
+
+  // Короткое описание волонтера
+  shortDescription String?
+
+  // Навыки
+  skills String @default("")
+
+  // Интересы
+  interests String @default("")
+
+  // Полноценное описание
+  fullDescription String @default("")
+
+  // Дата рождения
+  dateOfBirth DateTime @default(now())
 }
 
 model Event {

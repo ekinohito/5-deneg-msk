@@ -8,16 +8,28 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar DateTime
 
 type Mutation {
+  alterRating(id: Int!, rating: Int!): Float
   signupUser(email: String!, name: String!, password: String!): User
 }
 
 type Query {
   login(email: String!, password: String!): String
   user(email: String, userId: Int): User
+  volunteer(id: Int!): Volunteer
+  volunteers: [Volunteer]
 }
 
 type User {
   email: String
   id: Int
   name: String
+}
+
+type Volunteer {
+  eventsCount: Int
+  id: Int
+  picture: String
+  rating: Float
+  shortDescription: String
+  user: User
 }

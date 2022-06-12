@@ -50,6 +50,14 @@ export interface NexusGenObjects {
     id?: number | null; // Int
     name?: string | null; // String
   }
+  Volunteer: { // root type
+    eventsCount?: number | null; // Int
+    id?: number | null; // Int
+    picture?: string | null; // String
+    rating?: number | null; // Float
+    shortDescription?: string | null; // String
+    user?: NexusGenRootTypes['User'] | null; // User
+  }
 }
 
 export interface NexusGenInterfaces {
@@ -64,36 +72,62 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   Mutation: { // field return type
+    alterRating: number | null; // Float
     signupUser: NexusGenRootTypes['User'] | null; // User
   }
   Query: { // field return type
     login: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
+    volunteer: NexusGenRootTypes['Volunteer'] | null; // Volunteer
+    volunteers: Array<NexusGenRootTypes['Volunteer'] | null> | null; // [Volunteer]
   }
   User: { // field return type
     email: string | null; // String
     id: number | null; // Int
     name: string | null; // String
   }
+  Volunteer: { // field return type
+    eventsCount: number | null; // Int
+    id: number | null; // Int
+    picture: string | null; // String
+    rating: number | null; // Float
+    shortDescription: string | null; // String
+    user: NexusGenRootTypes['User'] | null; // User
+  }
 }
 
 export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
+    alterRating: 'Float'
     signupUser: 'User'
   }
   Query: { // field return type name
     login: 'String'
     user: 'User'
+    volunteer: 'Volunteer'
+    volunteers: 'Volunteer'
   }
   User: { // field return type name
     email: 'String'
     id: 'Int'
     name: 'String'
   }
+  Volunteer: { // field return type name
+    eventsCount: 'Int'
+    id: 'Int'
+    picture: 'String'
+    rating: 'Float'
+    shortDescription: 'String'
+    user: 'User'
+  }
 }
 
 export interface NexusGenArgTypes {
   Mutation: {
+    alterRating: { // args
+      id: number; // Int!
+      rating: number; // Int!
+    }
     signupUser: { // args
       email: string; // String!
       name: string; // String!
@@ -108,6 +142,9 @@ export interface NexusGenArgTypes {
     user: { // args
       email?: string | null; // String
       userId?: number | null; // Int
+    }
+    volunteer: { // args
+      id: number; // Int!
     }
   }
 }
