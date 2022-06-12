@@ -10,12 +10,12 @@ export default function Layout({children}: Props) {
     return (
         <>
             <header className="bg-red-600 w-full text-white mb-6">
-                <div className="flex flex-row items-center justify-between max-w-screen-lg mx-auto h-16">
+                <div className="flex flex-row items-center justify-between max-w-screen-lg mx-auto px-4 h-16">
                     <h1 className="text-xl font-semibold">5 Денег – Волонтеры Москвы</h1>
                     {user ? <Link href="/user"><a>{user.name}</a></Link> : <Link href="/login">Войти</Link>}
                 </div>
             </header>
-            <main className="max-w-screen-lg mx-auto">
+            <main className="max-w-screen-lg mx-auto px-4">
                 {children}
             </main>
         </>

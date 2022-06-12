@@ -1,7 +1,3 @@
-import Link from "next/link"
-import gql from "graphql-tag"
-import { useQuery } from "@apollo/client"
-import SignupForm from "../components/SignupForm"
 import BigButton from "../components/BigButton"
 import Layout from "../components/Layout"
 

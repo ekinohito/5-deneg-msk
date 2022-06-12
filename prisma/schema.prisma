@@ -36,6 +36,10 @@ model Volunteer {
 
   // Пользователь, с которым ассоциирована запись волонтера
   user User @relation(fields: [userId], references: [id])
+
+  // URL фотографии
+  picture String?
+  
 }
 
 model Event {
