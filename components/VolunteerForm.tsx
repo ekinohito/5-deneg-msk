@@ -130,7 +130,7 @@ export default function VolunteerForm() {
                     errors.interests = "Это обязательное поле"
                 }
                 if (!values.fullDescription) {
-                    errors.skills = "Это обязательное поле"
+                    errors.fullDescription = "Это обязательное поле"
                 }
 
                 return errors
