@@ -15,6 +15,7 @@ import cors from "micro-cors"
 import prisma from "../../lib/prisma"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import { data } from "autoprefixer"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
@@ -40,6 +41,11 @@ const Volunteer = objectType({
         t.float("rating")
         t.int("eventsCount")
         t.string("shortDescription")
+        t.string("skills")
+        t.string("langs")
+        t.string("interests")
+        t.string("fullDescription")
+        t.date("dateOfBirth")
     },
 })
 
@@ -92,6 +98,18 @@ const Query = objectType({
                 })
             },
         })
+        t.field("volunteer2", {
+            type: "Volunteer",
+            args: {
+                id: nonNull(intArg()),
+            },
+            resolve: async (_, { id }) => {
+                return prisma.volunteer.findUnique({
+                    where: { userId: id },
+                    include: { user: true },
+                })
+            },
+        })
         t.field("volunteers", {
             type: list("Volunteer"),
             resolve: async () => {
@@ -121,6 +139,27 @@ const Mutation = objectType({
                     },
                 })
             },
+        })
+        t.field("upsertVolunteer", {
+            type: "Volunteer",
+            args: {
+                id: nonNull(intArg()),
+                shortDescription: stringArg(),
+                picture: stringArg(),
+                skills: nonNull(stringArg()),
+                langs: nonNull(stringArg()),
+                interests: nonNull(stringArg()),
+                fullDescription: nonNull(stringArg()),
+                dateOfBirth: stringArg()
+            },
+            resolve: async (_, {id, ...volunteer}) => {
+                return prisma.volunteer.upsert({
+                    where: {userId: id},
+                    update: volunteer,
+                    create: { ...volunteer, userId: id },
+                    include: { user: true }
+                })
+            }
         })
         t.field("alterRating", {
             type: "Float",

@@ -8,8 +8,9 @@ export interface VolunteerShort {
 }
 
 export interface Volunteer extends VolunteerShort {
-    languages: string[]
-    skills: string[]
-    interests: string[]
-    description: string
+    skills: string
+    langs: string
+    interests: string
+    fullDescription: string
+    dateOfBirth: string
 }

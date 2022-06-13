@@ -8,8 +8,8 @@ export default function Home() {
                 Стань <span className="text-red-600">волонтером!</span>
             </h1>
             <div className="space-x-4">
-                <BigButton>Стать волонтером</BigButton>
-                <BigButton>Создать мероприятие</BigButton>
+                <BigButton href="/volunteers/edit">Стать волонтером</BigButton>
+                <BigButton href="/">Создать мероприятие</BigButton>
             </div>
         </Layout>
     )

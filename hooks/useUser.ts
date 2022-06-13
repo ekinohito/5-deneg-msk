@@ -1,4 +1,6 @@
-import create from 'zustand'
+import { userInfo } from "os"
+import create from "zustand"
+import { persist } from "zustand/middleware"
 
 interface User {
     jwt: string
@@ -13,8 +15,15 @@ interface State {
     logout: () => void
 }
 
-export const useUser = create<State>(set => ({
-    user: null,
-    login: user => set({ user }),
-    logout: () => set({ user: null })
-  }))
+export const useUser = create(
+    persist<State>(
+        set => ({
+            user: null,
+            login: user => set({ user }),
+            logout: () => set({ user: null }),
+        }),
+        {
+            name: "user",
+        }
+    )
+)

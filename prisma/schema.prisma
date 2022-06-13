@@ -53,6 +53,9 @@ model Volunteer {
   // Навыки
   skills String @default("")
 
+  // Иностранные языки
+  langs String @default("")
+
   // Интересы
   interests String @default("")
 

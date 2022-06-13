@@ -27,7 +27,7 @@ export default function Volunteers() {
                 {loading
                 ? "Loading"
                 : data.volunteers.map(volunteer => {
-                    return <VolunteerCard volunteer={{...volunteer, name: volunteer.user.name}} />
+                    return <VolunteerCard key={volunteer.id} volunteer={{...volunteer, name: volunteer.user.name}} />
                 })}
             </div>
             

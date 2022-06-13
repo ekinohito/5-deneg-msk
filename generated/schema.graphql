@@ -10,12 +10,14 @@ scalar DateTime
 type Mutation {
   alterRating(id: Int!, rating: Int!): Float
   signupUser(email: String!, name: String!, password: String!): User
+  upsertVolunteer(dateOfBirth: String, fullDescription: String!, id: Int!, interests: String!, langs: String!, picture: String, shortDescription: String, skills: String!): Volunteer
 }
 
 type Query {
   login(email: String!, password: String!): String
   user(email: String, userId: Int): User
   volunteer(id: Int!): Volunteer
+  volunteer2(id: Int!): Volunteer
   volunteers: [Volunteer]
 }
 
@@ -26,10 +28,15 @@ type User {
 }
 
 type Volunteer {
+  dateOfBirth: DateTime
   eventsCount: Int
+  fullDescription: String
   id: Int
+  interests: String
+  langs: String
   picture: String
   rating: Float
   shortDescription: String
+  skills: String
   user: User
 }

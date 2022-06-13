@@ -2,7 +2,9 @@ import { useQuery } from "@apollo/client"
 import { gql } from "apollo-server-micro"
 import { useRouter } from "next/router"
 import Layout from "../../components/Layout"
+import NavLink from "../../components/NavLink"
 import VolunteerCard from "../../components/VolunteerCard"
+import VolunteerProfile from "../../components/VolunteerProfile"
 
 const VolunteerQuery = gql`
     query VolunteerQuery($id: Int!) {
@@ -14,7 +16,11 @@ const VolunteerQuery = gql`
             user {
                 name
             }
-            shortDescription
+            dateOfBirth
+            fullDescription
+            skills
+            langs
+            interests
         }
     }
 `
@@ -22,13 +28,16 @@ const VolunteerQuery = gql`
 export default function Volunteer() {
     const router = useRouter()
     console.log(router.query.id)
-    const { data, loading } = useQuery(VolunteerQuery, {variables: {id: Number(router.query.id)}})
+    const { data, loading } = useQuery(VolunteerQuery, {
+        variables: { id: Number(router.query.id) },
+    })
     return (
         <Layout>
+            <NavLink href="/volunteers" className="block mb-4">← Назад</NavLink>
             {loading ? (
-                "Loading"
+                "Загрузка..."
             ) : (
-                <VolunteerCard
+                <VolunteerProfile
                     volunteer={{
                         ...data.volunteer,
                         name: data.volunteer.user.name,

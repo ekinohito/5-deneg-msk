@@ -51,11 +51,16 @@ export interface NexusGenObjects {
     name?: string | null; // String
   }
   Volunteer: { // root type
+    dateOfBirth?: NexusGenScalars['DateTime'] | null; // DateTime
     eventsCount?: number | null; // Int
+    fullDescription?: string | null; // String
     id?: number | null; // Int
+    interests?: string | null; // String
+    langs?: string | null; // String
     picture?: string | null; // String
     rating?: number | null; // Float
     shortDescription?: string | null; // String
+    skills?: string | null; // String
     user?: NexusGenRootTypes['User'] | null; // User
   }
 }
@@ -74,11 +79,13 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     alterRating: number | null; // Float
     signupUser: NexusGenRootTypes['User'] | null; // User
+    upsertVolunteer: NexusGenRootTypes['Volunteer'] | null; // Volunteer
   }
   Query: { // field return type
     login: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
     volunteer: NexusGenRootTypes['Volunteer'] | null; // Volunteer
+    volunteer2: NexusGenRootTypes['Volunteer'] | null; // Volunteer
     volunteers: Array<NexusGenRootTypes['Volunteer'] | null> | null; // [Volunteer]
   }
   User: { // field return type
@@ -87,11 +94,16 @@ export interface NexusGenFieldTypes {
     name: string | null; // String
   }
   Volunteer: { // field return type
+    dateOfBirth: NexusGenScalars['DateTime'] | null; // DateTime
     eventsCount: number | null; // Int
+    fullDescription: string | null; // String
     id: number | null; // Int
+    interests: string | null; // String
+    langs: string | null; // String
     picture: string | null; // String
     rating: number | null; // Float
     shortDescription: string | null; // String
+    skills: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
   }
 }
@@ -100,11 +112,13 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     alterRating: 'Float'
     signupUser: 'User'
+    upsertVolunteer: 'Volunteer'
   }
   Query: { // field return type name
     login: 'String'
     user: 'User'
     volunteer: 'Volunteer'
+    volunteer2: 'Volunteer'
     volunteers: 'Volunteer'
   }
   User: { // field return type name
@@ -113,11 +127,16 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
   }
   Volunteer: { // field return type name
+    dateOfBirth: 'DateTime'
     eventsCount: 'Int'
+    fullDescription: 'String'
     id: 'Int'
+    interests: 'String'
+    langs: 'String'
     picture: 'String'
     rating: 'Float'
     shortDescription: 'String'
+    skills: 'String'
     user: 'User'
   }
 }
@@ -133,6 +152,16 @@ export interface NexusGenArgTypes {
       name: string; // String!
       password: string; // String!
     }
+    upsertVolunteer: { // args
+      dateOfBirth?: string | null; // String
+      fullDescription: string; // String!
+      id: number; // Int!
+      interests: string; // String!
+      langs: string; // String!
+      picture?: string | null; // String
+      shortDescription?: string | null; // String
+      skills: string; // String!
+    }
   }
   Query: {
     login: { // args
@@ -144,6 +173,9 @@ export interface NexusGenArgTypes {
       userId?: number | null; // Int
     }
     volunteer: { // args
+      id: number; // Int!
+    }
+    volunteer2: { // args
       id: number; // Int!
     }
   }
