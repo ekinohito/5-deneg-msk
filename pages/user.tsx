@@ -15,9 +15,10 @@ export default function Login() {
 
     return (
         <Layout>
-            <div className="flex flex-col items-center">
-                <h1 className="text-2xl mb-4">Вы зашли как <span className="font-bold">{user.name}</span></h1>
+            <div className="flex flex-col items-center space-y-4">
+                <h1 className="text-2xl">Вы зашли как <span className="font-bold">{user.name}</span></h1>
                 <Button onClick={logout}>Выйти</Button>
+                <Button onClick={() => router.push('/volunteers/edit')}>Редактировать анкету</Button>
             </div>
         </Layout>
     )

@@ -103,7 +103,7 @@ export default function SignupForm() {
             }}
         >
             {({ touched, errors }) => (
-                <Form className="flex flex-col w-96 text-md bg-red-100 rounded-lg p-4 space-y-4">
+                <Form className="flex flex-col w-96 text-md  bg-gray-50 rounded-lg p-4 space-y-4">
                     <TextField name="email" placeholder="E-mail" type="email" error={touched.email && errors.email}/>
                     <TextField name="firstName" placeholder="Имя" error={touched.firstName && errors.firstName}/>
                     <TextField name="lastName" placeholder="Фамилия" error={touched.lastName && errors.lastName}/>

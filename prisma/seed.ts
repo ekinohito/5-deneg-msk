@@ -3,21 +3,21 @@ import { PrismaClient, Prisma } from '@prisma/client'
 const prisma = new PrismaClient()
 
 const userData: Prisma.UserCreateInput[] = [
-  {
-    name: 'Alice',
-    email: 'alice@prisma.io',
-    hashedPassword: ''
-  },
-  {
-    name: 'Nilu',
-    email: 'nilu@prisma.io',
-    hashedPassword: ''
-  },
-  {
-    name: 'Mahmoud',
-    email: 'mahmoud@prisma.io',
-    hashedPassword: ''
-  },
+  // {
+  //   name: 'Alice',
+  //   email: 'alice@prisma.io',
+  //   hashedPassword: ''
+  // },
+  // {
+  //   name: 'Nilu',
+  //   email: 'nilu@prisma.io',
+  //   hashedPassword: ''
+  // },
+  // {
+  //   name: 'Mahmoud',
+  //   email: 'mahmoud@prisma.io',
+  //   hashedPassword: ''
+  // },
 ]
 
 export async function main() {

@@ -88,13 +88,21 @@ export default function VolunteerForm() {
     return (
         <Formik
             initialValues={
-                data.volunteer2 as Values
+                (data.volunteer2 as Values) ??
+                ({
+                    shortDescription: "",
+                    picture: "",
+                    skills: "",
+                    langs: "",
+                    interests: "",
+                    fullDescription: "",
+                    dateOfBirth: "",
+                } as Values)
             }
             onSubmit={async (
                 values: Values,
                 { setFieldError }: FormikHelpers<Values>
             ) => {
-                console.log(new Date(values.dateOfBirth).toJSON())
                 const { data } = await upsert({
                     variables: {
                         ...values,
@@ -164,7 +172,9 @@ export default function VolunteerForm() {
                         multi
                         name="fullDescription"
                         placeholder="О себе (поподробнее)"
-                        error={touched.fullDescription && errors.fullDescription}
+                        error={
+                            touched.fullDescription && errors.fullDescription
+                        }
                     />
                     <Button type="submit">Сохранить</Button>
                 </Form>
